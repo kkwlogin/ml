@@ -1,0 +1,54 @@
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split
+
+
+data = pd.read_csv("C:/Users/91992/OneDrive/Documents/sem-5/MLL/Heart.csv")
+
+
+print("First few rows of the dataset:")
+print(data.head())
+
+
+duplicates = data.duplicated().sum()
+print(f" Number of duplicate rows: {duplicates}")
+data = data.drop_duplicates()
+print(f" Number of rows after removing duplicates: {data.shape[0]}")
+
+
+
+print("Missing values in each column before handling:")
+print(data.isnull().sum())
+
+
+
+for column in data.columns:
+    if data[column].isnull().sum() > 0:
+        if data[column].dtype in ['float64', 'int64']:
+            median_value = data[column].median()
+            data[column].fillna(median_value, inplace=True)
+
+
+
+print("Missing values in each column after handling:")
+print(data.isnull().sum())
+
+
+
+numerical_features = data.select_dtypes(include=['float64', 'int64']).columns
+scaler = StandardScaler()
+data[numerical_features] = scaler.fit_transform(data[numerical_features])
+
+
+
+
+print("Data after scaling (first 5 rows):")
+print(data.head())
+
+
+
+
+train_data, test_data = train_test_split(data, test_size=0.25, random_state=42)
+print("Training data size:", train_data.shape)
+print("Testing data size:", test_data.shape)
